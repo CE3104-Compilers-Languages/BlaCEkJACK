@@ -1,7 +1,7 @@
 #lang racket
 
 
-(require racket/gui 2htdp/image)
+(require racket/gui)
 
 ; Variables globales
 (define current_turn 1)
@@ -13,6 +13,9 @@
 (define game_frame (new frame%
                    [label "Blackjack"]
                    [spacing game_spacing]))
+
+(define (get_img img_name)
+  (bitmap% img_name))
 
 ; Crupier scene (inside total game scene)
 (define crupier-panel (new vertical-panel%
@@ -83,8 +86,12 @@
                            [parent players-panel]
                            [spacing game_spacing]))
 
+(define player3-cards-panel (new horizontal-panel%
+                                 [parent player3-panel]))
+
 (define msg7 (new message% [parent player3-panel]
-                 [label "Aqui van cartas de jugador 3"]))
+                 [label (read-bitmap "imgs/cards/cardClubs2.png")]))
+
 
 (define msg8 (new message% [parent player3-panel]
                  [label "Aqui va info jugador 3"]))
