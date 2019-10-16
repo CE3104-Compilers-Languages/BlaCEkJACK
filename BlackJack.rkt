@@ -97,15 +97,29 @@
 
 (define (iniciar Ncartas) (iniciar-aux (* Ncartas CantidadJugadores)))
 
-(define (plantar-aux Njugador) (
+(define (plantar-aux Njugador jugadores) (
                                 cond ((zero? Njugador)
                                       (cons (list (caar jugadores)
                                                   #t
                                                   (caddar jugadores))
                                             (cdr jugadores)))
                                (else
-                                (cons (car jugadores) (pedir-aux (- Njugador 1) (cdr jugadores) carta)))
+                                (cons (car jugadores) (plantar-aux (- Njugador 1) (cdr jugadores))))
                                ))
+
+(define (plantar Njugador) (
+                            cond (#t
+                                  (set! jugadores (plantar-aux Njugador jugadores)))
+                                 ))
+
+(define (plantado?-aux Njugador jugadores) (
+                              cond ((zero? Njugador)
+                                    (cadar jugadores))
+                                   (else
+                                    (plantado?-aux (- Njugador 1) (cdr jugadores)))
+                               ))
+
+(define (plantado? Njugador) (plantado?-aux Njugador jugadores))
 
 (define (suma Njugador) 1)
 
@@ -113,7 +127,8 @@
                         cond (< (suma 0) 17
                               (pedir 0)
                               (pedirCrupier))
-                             (else)
-                             )
+                             (else
+                              1)
+                             ))
 
 
