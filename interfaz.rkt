@@ -32,6 +32,7 @@
 
 (define CantidadJugadores 4)
 
+;Método que actualiza los mazos de la partida al pedir una nueva carta
 (define (pedir Njugador) (cond (#t
                                 (let ([rnd (random conteo)])
                                   (set! jugadores (pedir-aux Njugador jugadores rnd mazo))
@@ -40,6 +41,7 @@
                                 )
                                ))
 
+;Método que pide un número N de cartas que se distribuyen entre todos los jugadores
 (define (iniciar Ncartas) (
                            cond ((zero? Ncartas)
                                  )
