@@ -3,7 +3,6 @@
 
 (require racket/gui)
 
-
 ; Variables globales
 (define current_turn 1)
 (define cards '())
@@ -15,18 +14,6 @@
                    [label "Blackjack"]
                    [spacing game_spacing]))
 
-;(define background_img (make-object bitmap% "imgs/background.jpg"))
-
-;(define canvas
-;  (instantiate canvas%
-;    (game_frame)
-;    (paint-callback
-;     (lambda (canvas dc)
-;       (send dc draw-bitmap background_img 0 0)))
-;    (min-width (send background_img get-width))
-;    (min-height (send background_img get-height))))
-
-; WIP IMAGE PRODUCTION
 (define (get_img img_name)
   (bitmap% img_name))
 
@@ -118,20 +105,3 @@
      [label "Hit"])
 (new button% [parent player3-stance-panel]
      [label "Stand"])
-
-; Functions utilized to initialize game
-(define (list_length arr length)
-  (cond ((equal? arr '()) length)
-        (else
-         (list_length (cdr arr) (+ length 1)))))
-
-(define (bCEj X)
-  (cond ((equal? (list_length X 0) 1) (send game_frame show #t))
-        (else
-         (write "Cant start game with number of players given"))))
-
-
-
-
-
-
