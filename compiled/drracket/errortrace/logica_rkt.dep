@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 ("7.4" racket ("7a7fe31ab1aee2688f1c77bcdced5b32956cfe64" . "c046e820dc76b02b24d36b88cad752e276588550") (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
+=======
+("7.4" racket ("9a838eee5d713cce6dd38bce2542f7fee09dfc3e" . "c046e820dc76b02b24d36b88cad752e276588550") (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
+>>>>>>> Puntuacion
