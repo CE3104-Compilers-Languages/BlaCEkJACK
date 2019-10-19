@@ -32,6 +32,7 @@
                           (cons (car Lista) (delete (cdr Lista) (- N 1))))
                          ))
 ; Método que devuelve el N-ésimo de una lista
+(provide get)
 (define (get Lista N) (
                     cond ((null? Lista)
                           #f)
