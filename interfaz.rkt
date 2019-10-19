@@ -19,6 +19,7 @@
                       (init-value "")
                       [min-width cell_width]	 
                       [min-height cell_height]
+                      [enabled #f]
                       ))
 (define celda01 (new text-field%
                       (label "")
@@ -26,6 +27,7 @@
                       (init-value "")
                       [min-width cell_width]	 
                       [min-height cell_height]
+                      [enabled #f]
                       ))
 (define celda02 (new text-field%
                       (label "")
@@ -33,6 +35,7 @@
                       (init-value "")
                       [min-width cell_width]	 
                       [min-height cell_height]
+                      [enabled #f]
                       ))
 
 (define celda10 (new text-field%
@@ -41,6 +44,7 @@
                       (init-value "")
                       [min-width cell_width]	 
                       [min-height cell_height]
+                      [enabled #f]
                       ))
 (define celda11 (new text-field%
                       (label "")
@@ -48,6 +52,7 @@
                       (init-value "")
                       [min-width cell_width]	 
                       [min-height cell_height]
+                      [enabled #f]
                       ))
 (define celda12 (new text-field%
                       (label "")
@@ -55,6 +60,7 @@
                       (init-value "")
                       [min-width cell_width]	 
                       [min-height cell_height]
+                      [enabled #f]
                       ))
 
 (define celda20 (new text-field%
@@ -63,6 +69,7 @@
                       (init-value "")
                       [min-width cell_width]	 
                       [min-height cell_height]
+                      [enabled #f]
                       ))
 (define celda21 (new text-field%
                       (label "")
@@ -70,6 +77,7 @@
                       (init-value "")
                       [min-width cell_width]	 
                       [min-height cell_height]
+                      [enabled #f]
                       ))
 (define celda22 (new text-field%
                       (label "")
@@ -77,6 +85,7 @@
                       (init-value "")
                       [min-width cell_width]	 
                       [min-height cell_height]
+                      [enabled #f]
                       ))
 
 
