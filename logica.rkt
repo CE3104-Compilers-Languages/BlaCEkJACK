@@ -42,6 +42,15 @@
                           (get (cdr Lista) (- N 1)))
                          ))
 
+;Método que retorna el largo de una lista
+(provide len)
+(define (len Lista) (
+                     cond ((null? Lista)
+                          0)
+                          (else
+                           (+ 1 (len (cdr Lista))))
+                          ))
+
 ; Método que añade una carta al jugador N de la partida a partir del mazo
 ; y con un número aleatorio de carta dada externamente
 ; se encarga de reconstruir toda la lista de jugadores y devolver una lista actualizada

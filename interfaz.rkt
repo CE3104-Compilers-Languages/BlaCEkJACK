@@ -21,18 +21,15 @@
 (define mazo (combinar palos nombres valores))
 
 
-(define jugadores
-  '(("crupier" (list))
-    ("pancho" (list))
-    ("lola" (list))
-    ("manuela" (list))
-  )
-  )
+(define jugadores '())
+(define CantidadJugadores 0)
 (define conteo 52)
-
-(define CantidadJugadores 4)
-
 (define turno 1)
+
+(define (GenerarJugadores nombres)
+  (set! jugadores (AsignarNombres nombres))
+  (set! CantidadJugadores (+ 1 (len nombres)))
+  )
 
 ;Método que actualiza los mazos de la partida al pedir una nueva carta
 (define (pedir Njugador)
