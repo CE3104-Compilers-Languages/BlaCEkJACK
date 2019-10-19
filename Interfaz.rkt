@@ -78,6 +78,19 @@
   
   )
 
+(define (sumar_jugador njugador lista)
+  (sumar_jugador_aux njugador lista 0)
+  )
+(define (sumar_jugador_aux njugador lista n)
+  (cond
+    [(= n njugador)
+     (sumar_jug (car lista))]
+    (else
+     (sumar_jugador_aux njugador (cdr lista) (+ n 1))
+     )
+    )
+  )
+
 
 
 
