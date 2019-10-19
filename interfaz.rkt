@@ -5,10 +5,10 @@
 
 (define palos '("corazones"
                 "diamantes"
-                "plicas"
+                "picas"
                 "treboles"))
 
-(define nombres '("As" "2" "3" "4"
+(define nombres '("A" "2" "3" "4"
                 "5" "6" "7" "8"
                 "9" "10" "J" "Q" "K"))
 
