@@ -1,51 +1,96 @@
 #lang racket/gui
 (require "logica.rkt")
+(define window_width 45)
+(define window_height 30)
+(define cell_width (/ window_width 3))
+(define cell_height (/ window_height 3))
 (define frame (new frame% [label "Resultados - ♠ ♥ ♦ ♣"]
-                   [min-width 500]	 
-                   [min-height 300]))
+                   [min-width window_width]	 
+                   [min-height window_height]))
 
 (define column0 (new horizontal-panel% [parent frame]))
 (define column1 (new horizontal-panel% [parent frame]))
 (define column2 (new horizontal-panel% [parent frame]))
+(define column3 (new vertical-panel% [parent frame]))
 
 (define celda00 (new text-field%
                       (label "")
                       (parent column0)
-                      (init-value "")))
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      ))
 (define celda01 (new text-field%
                       (label "")
                       (parent column0)
-                      (init-value "")))
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      ))
 (define celda02 (new text-field%
                       (label "")
                       (parent column0)
-                      (init-value "")))
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      ))
 
 (define celda10 (new text-field%
                       (label "")
                       (parent column1)
-                      (init-value "")))
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      ))
 (define celda11 (new text-field%
                       (label "")
                       (parent column1)
-                      (init-value "")))
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      ))
 (define celda12 (new text-field%
                       (label "")
                       (parent column1)
-                      (init-value "")))
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      ))
 
 (define celda20 (new text-field%
                       (label "")
                       (parent column2)
-                      (init-value "")))
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      ))
 (define celda21 (new text-field%
                       (label "")
                       (parent column2)
-                      (init-value "")))
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      ))
 (define celda22 (new text-field%
                       (label "")
                       (parent column2)
-                      (init-value "")))
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      ))
+
+
+(define boton_repetir (new button% [parent column3]
+     [label "Repetir"]
+     [min-width 50]
+     [min-height 50]
+     ))
+
+(define boton_salir (new button% [parent column3]
+     [label "Salir"]
+     [min-width 50]
+     [min-height 50]
+     ))
 
 ; ACTUALIZADA
 ; funcion que muestra una tabla con las puntuaciones finales de los jugadores
