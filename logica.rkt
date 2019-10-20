@@ -43,3 +43,28 @@
                          ))
 
 
+;Método que añade el crupier a la lista de jugadores
+(provide AsignarNombres)
+(define (AsignarNombres nombres)
+  (cons (list "Crupier" (list))
+  (AsignarNombres-aux nombres (list)))
+  )
+
+;Método que toma una lista vacía y pone jugadores en la lista
+(define (AsignarNombres-aux nombres lista)
+  (cond
+    [(null? nombres) '()]
+    (else
+     (append
+    (list
+    (list
+     (car nombres)
+     '()
+    )
+    )
+   (AsignarNombres-aux (cdr nombres) lista)
+   )
+     )
+    )
+  )
+
