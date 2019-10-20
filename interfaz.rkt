@@ -20,15 +20,14 @@
 
 
 (define mazo (combinar palos nombres valores))
-(define temp_card '())
 (define crupier '("Crupier" '()))
 (define jugadores '())
 (define conteo 52)
 (define current_turn 0)
-
+(define turno 1)
 (define CantidadJugadores 4)
 
-(define turno 1)
+
 
 ;Método que actualiza los mazos de la partida al pedir una nueva carta
 (define (pedir Njugador)
@@ -107,9 +106,30 @@
 ;    (min-width (send background_img get-width))
 ;    (min-height (send background_img get-height))))
 
+
 ; WIP IMAGE PRODUCTION
-(define (get_img img_name)
-  (bitmap% img_name))
+(define (get_img card player_num)
+  (cond ((file-exists? (string-append "imgs/cards" (car card) (car (cdr card)) ".png"))
+         (cond
+           ((equal? player_num 1)
+            (new message% [parent player1-panel]
+                 [label (read-bitmap (string-append "imgs/cards" (car card) (car (cdr card)) ".png"))]))
+           
+           ((and (equal? player_num 2) (>= (list_length jugadores 0) 2))
+            (new message% [parent player2-panel]
+                 [label (read-bitmap (string-append "imgs/cards" (car card) (car (cdr card)) ".png"))]))
+           
+           ((and (equal? player_num 3) (>= (list_length jugadores 0) 3))
+            (new message% [parent player3-panel]
+                 [label (read-bitmap (string-append "imgs/cards" (car card) (car (cdr card)) ".png"))]))
+           (else
+           (write "Invalid player card assignment")))
+        )
+        (else
+         (write "Invalid file path"))))
+                                                                                        
+
+
 
 ; Crupier scene (inside total game scene)
 (define crupier-panel (new vertical-panel%
