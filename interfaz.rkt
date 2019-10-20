@@ -28,29 +28,17 @@
 
 (define CantidadJugadores 4)
 
-; Método que actualiza los mazos de la partida al pedir una nueva carta
-(define (pedir Njugador) (cond (#t
-                                (let ([rnd (random conteo)])
-                                  (set! jugadores (pedir-aux Njugador jugadores rnd mazo))
-                                  (set! conteo (- conteo 1))
-                                  (set! mazo (delete mazo rnd))
-                                  (update_cards Njugador)
-                                )
-                               )))
+(define turno 1)
 
-; Método que añade una carta al jugador N de la partida a partir del mazo
-; y con un número aleatorio de carta dada externamente
-; se encarga de reconstruir toda la lista de jugadores y devolver una lista actualizada
-(define (pedir-aux Njugador carta mazo) (
-                          cond ((zero? Njugador)
-                                (cons (list (caar jugadores)
-                                      (append (cadar jugadores) temp_card))
-                                      (cdr jugadores))
-                                (set! temp_card (get mazo carta)))                        
-                               (else
-                                (cons (car jugadores) (pedir-aux (- Njugador 1) (cdr jugadores) carta mazo)))
-                               ))
-  
+;Método que actualiza los mazos de la partida al pedir una nueva carta
+(define (pedir Njugador)
+  (let* ([rnd (random conteo)] [carta (get mazo rnd)])
+    (set! jugadores (pedir-aux Njugador jugadores rnd mazo))
+    (set! conteo (- conteo 1))
+    (set! mazo (delete mazo rnd))
+    carta)
+                               )
+
 ;Método que pide un número N de cartas que se distribuyen entre todos los jugadores
 (define (iniciar Ncartas) (
                            cond ((zero? Ncartas)
@@ -59,14 +47,23 @@
                                  (pedir (remainder Ncartas CantidadJugadores))
                                  (iniciar (- Ncartas 1)))
                                 ))
-
-
+;Método que finaliza el turno de un jugador y pasa al siguiente al siguiente
+(define (plantar)
+  (set! turno (remainder (+ turno 1) CantidadJugadores))
+  turno
+  )
+;
 (define (suma Njugador) 1)
 
+;Método que evalúa si las cartas del crupier suman 16 o menos
+;de ser así pide una carta más para el crupier y devuelve un True
+;de lo contrario devuelve un False para avisar que no se debe volver a pedir
 (define (pedirCrupier) (
                         cond (< (suma 0) 17
                               (pedir 0)
-                              (pedirCrupier))
+                              #t)
+                             (else
+                              #f)
                              ))
 
 
