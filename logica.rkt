@@ -32,6 +32,7 @@
                           (cons (car Lista) (delete (cdr Lista) (- N 1))))
                          ))
 ; Método que devuelve el N-ésimo de una lista
+(provide get)
 (define (get Lista N) (
                     cond ((null? Lista)
                           #f)
@@ -40,18 +41,5 @@
                          (else
                           (get (cdr Lista) (- N 1)))
                          ))
-
-; Método que añade una carta al jugador N de la partida a partir del mazo
-; y con un número aleatorio de carta dada externamente
-; se encarga de reconstruir toda la lista de jugadores y devolver una lista actualizada
-(provide pedir-aux)
-(define (pedir-aux Njugador jugadores carta mazo) (
-                          cond ((zero? Njugador)
-                                (cons (list (caar jugadores)
-                                      (append (cadar jugadores) (list (get mazo carta))))
-                                      (cdr jugadores)))
-                               (else
-                                (cons (car jugadores) (pedir-aux (- Njugador 1) (cdr jugadores) carta mazo)))
-                               ))
 
 

@@ -20,22 +20,37 @@
 
 
 (define mazo (combinar palos nombres valores))
-
+(define temp_card '())
 (define crupier '("Crupier" '()))
 (define jugadores '())
 (define conteo 52)
+(define current_turn 0)
 
 (define CantidadJugadores 4)
 
-;Método que actualiza los mazos de la partida al pedir una nueva carta
+; Método que actualiza los mazos de la partida al pedir una nueva carta
 (define (pedir Njugador) (cond (#t
                                 (let ([rnd (random conteo)])
                                   (set! jugadores (pedir-aux Njugador jugadores rnd mazo))
                                   (set! conteo (- conteo 1))
-                                  (set! mazo (delete mazo rnd)))
+                                  (set! mazo (delete mazo rnd))
+                                  (update_cards Njugador)
                                 )
-                               ))
+                               )))
 
+; Método que añade una carta al jugador N de la partida a partir del mazo
+; y con un número aleatorio de carta dada externamente
+; se encarga de reconstruir toda la lista de jugadores y devolver una lista actualizada
+(define (pedir-aux Njugador carta mazo) (
+                          cond ((zero? Njugador)
+                                (cons (list (caar jugadores)
+                                      (append (cadar jugadores) temp_card))
+                                      (cdr jugadores))
+                                (set! temp_card (get mazo carta)))                        
+                               (else
+                                (cons (car jugadores) (pedir-aux (- Njugador 1) (cdr jugadores) carta mazo)))
+                               ))
+  
 ;Método que pide un número N de cartas que se distribuyen entre todos los jugadores
 (define (iniciar Ncartas) (
                            cond ((zero? Ncartas)
@@ -56,10 +71,28 @@
 
 
 ; Variables globales
-(define current_turn 1)
-(define cards '())
-(define players '())
 (define game_spacing 10)
+
+(define (change_turn player_num)
+  (cond ((and (equal? player_num 1) (>= (list_length jugadores 0) player_num)) (begin
+                                                                                      (send player1_turn set-label "Playing!")
+                                                                                      (set! current_turn player_num)))
+  ((and (equal? player_num 2) (>= (list_length jugadores 0) player_num)) (begin
+                                                                                       (send player1_turn set-label "Already played")
+                                                                                       (send player2_turn set-label "Playing!")
+                                                                                       (set! current_turn player_num)))
+  ((and (equal? player_num 3) (>= (list_length jugadores 0) player_num)) (begin
+                                                                                 (send player2_turn set-label "Already played")
+                                                                                 (send player3_turn set-label "Playing")
+                                                                                 (set! current_turn player_num)))
+  (else
+   (begin
+      (send player1_turn set-label "Already played")
+      (send player2_turn set-label "Already played")
+      (send player3_turn set-label "Already played")
+      (send crupier_turn set-label "Playing!")))))
+
+(define (update_cards player_num)#t)
 
 ; Total game scene
 (define game_frame (new frame%
@@ -89,10 +122,16 @@
 (new message% [parent crupier-panel]
      [label "Crupier"])
 
-(define msg (new message% [parent crupier-panel]
-                 [label "Aqui van cartas de crupier"]))
-(define msg2 (new message% [parent crupier-panel]
-                 [label "Aqui va info de crupier"]))
+
+(define crupier_cards (new message% [parent crupier-panel]
+                 [label ""]))
+
+(define crupier_turn (new message% [parent crupier-panel]
+                 [label "Not your turn"]))
+
+(define crupier_score (new message% [parent crupier-panel]
+                           [label "Score : 0"]))
+
 
 (define crupier-stance-panel (new horizontal-panel%
                                   [parent crupier-panel]
@@ -113,10 +152,14 @@
 (define player1_name (new message% [parent player1-panel]
                           [label ""]))
 
-(define msg3 (new message% [parent player1-panel]
-                 [label "Aqui van cartas del jugador 1"]))
-(define msg4 (new message% [parent player1-panel]
-                 [label "Aqui va info jugador 1"]))
+(define player1_cards (new message% [parent player1-panel]
+                 [label ""]))
+
+(define player1_turn (new message% [parent player1-panel]
+                 [label "Not your turn"]))
+
+(define player1_score (new message% [parent player1-panel]
+                           [label "Score : 0"]))
 
 (define player1-stance-panel (new horizontal-panel%
                                   [parent player1-panel]
@@ -125,8 +168,11 @@
 
 (new button% [parent player1-stance-panel]
      [label "Hit"])
+
 (new button% [parent player1-stance-panel]
-     [label "Stand"])
+     [label "Stand"]
+     [callback (lambda (button event)
+                 (change_turn 2))])
 
 ; Player 2 scene (inside scene shared by all players)
 (define player2-panel (new vertical-panel%
@@ -137,10 +183,14 @@
 (define player2_name (new message% [parent player2-panel]
                           [label ""]))
 
-(define msg5 (new message% [parent player2-panel]
-                 [label "Aqui van cartas de jugador 2"]))
-(define msg6 (new message% [parent player2-panel]
-                 [label "Aqui va info jugador 2"]))
+(define player2_cards (new message% [parent player2-panel]
+                 [label ""]))
+
+(define player2_turn (new message% [parent player2-panel]
+                 [label "Not your turn"]))
+
+(define player2_score (new message% [parent player2-panel]
+                           [label "Score : 0"]))
 
 (define player2-stance-panel (new horizontal-panel%
                                   [parent player2-panel]
@@ -149,8 +199,11 @@
 
 (new button% [parent player2-stance-panel]
      [label "Hit"])
+
 (new button% [parent player2-stance-panel]
-     [label "Stand"])
+     [label "Stand"]
+     [callback (lambda (button event)
+                 (change_turn 3))])
 
 ; Player 3 scene (inside scene shared by all players)
 (define player3-panel (new vertical-panel%
@@ -164,12 +217,15 @@
 (define player3-cards-panel (new horizontal-panel%
                                  [parent player3-panel]))
 
-(define msg7 (new message% [parent player3-panel]
-                 [label (read-bitmap "imgs/cards/cardClubs2.png")]))
+(define player_cards (new message% [parent player3-panel]
+                 [label (read-bitmap "imgs/cards/treboles2.png")]))
 
 
-(define msg8 (new message% [parent player3-panel]
-                 [label "Aqui va info jugador 3"]))
+(define player3_turn (new message% [parent player3-panel]
+                 [label "Not your turn"]))
+
+(define player3_score (new message% [parent player3-panel]
+                           [label "Score : 0"]))
 
 (define player3-stance-panel (new horizontal-panel%
                                   [parent player3-panel]
@@ -178,16 +234,19 @@
 
 (new button% [parent player3-stance-panel]
      [label "Hit"])
-(new button% [parent player3-stance-panel]
-     [label "Stand"])
 
-; Functions utilized to initialize game
+(new button% [parent player3-stance-panel]
+     [label "Stand"]
+     [callback (lambda (button event)
+                 (change_turn 4))])
+
+;; Functions utilized to initialize game
 (define (list_length arr length)
   (cond ((equal? arr '()) length)
         (else
          (list_length (cdr arr) (+ length 1)))))
 
-; Names players in the interface (numbers are inverted because they are compared to "jugadores" list length
+; Names players on gui
 (define (set_player_name name num)
   (cond ((equal? num 1) (begin (send player1-panel enable #t) (send player1_name set-label name)))
         ((equal? num 2) (begin (send player2-panel enable #t) (send player2_name set-label name)))
@@ -197,10 +256,9 @@
   (cond ((and (>= (list_length X 0) 1) (<= (list_length X 0) 3)) (begin (set! jugadores (append jugadores (list (list (car X) '()))))
                                                                    (set_player_name (car X) (list_length jugadores 0))
                                                                    (bCEj (cdr X))))
-        ((and (equal? X '()) (not (equal? jugadores '()))) (send game_frame show #t))
+        ((and (equal? X '()) (not (equal? jugadores '()))) (begin (change_turn 1) (send game_frame show #t)))
         (else
-         (write "Cant start game with number of players given"))))
-
+         (write "Cant start game with given number of players"))))
 
 
 
