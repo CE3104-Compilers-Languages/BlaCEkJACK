@@ -26,7 +26,15 @@
 (define turno 1)
 (define CantidadJugadores 4)
 
+(define (GenerarJugadores nombres)
+  (set! jugadores (AsignarNombres nombres))
+  (set! CantidadJugadores (+ 1 (len nombres)))
+  )
 
+(define (IniciarJuego nombres)
+  (GenerarJugadores nombres)
+  (IniciarCartas (* 2 CantidadJugadores))
+  )
 
 ;Método que actualiza los mazos de la partida al pedir una nueva carta
 (define (pedir Njugador)
@@ -38,12 +46,12 @@
                                )
 
 ;Método que pide un número N de cartas que se distribuyen entre todos los jugadores
-(define (iniciar Ncartas) (
+(define (IniciarCartas Ncartas) (
                            cond ((zero? Ncartas)
                                  )
                                 (else
                                  (pedir (remainder Ncartas CantidadJugadores))
-                                 (iniciar (- Ncartas 1)))
+                                 (IniciarCartas (- Ncartas 1)))
                                 ))
 ;Método que finaliza el turno de un jugador y pasa al siguiente al siguiente
 (define (plantar)
@@ -51,7 +59,6 @@
   turno
   )
 ;
-(define (suma Njugador) 1)
 
 ;Método que evalúa si las cartas del crupier suman 16 o menos
 ;de ser así pide una carta más para el crupier y devuelve un True
@@ -63,6 +70,12 @@
                              (else
                               #f)
                              ))
+
+
+(define (suma njugador)
+  (sumar_jugador_aux njugador jugadores 0)
+  )
+
 
 
 ; Variables globales
