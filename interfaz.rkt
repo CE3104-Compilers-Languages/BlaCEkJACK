@@ -1,6 +1,6 @@
 #lang racket
 
-(require racket/gui)
+(require racket/gui pict)
 (#%require (only racket/base random))
 (require "logica.rkt")
 
@@ -14,7 +14,7 @@
                 "5" "6" "7" "8"
                 "9" "10" "J" "Q" "K"))
 
-(define valores '((1 11) 2 3 4
+(define valores '(11 2 3 4
                 5 6 7 8
                 9 10 10 10 10))
 
@@ -55,6 +55,7 @@
                                    )
                                  (IniciarCartas (- Ncartas 1)))
                                 ))
+
 ;Método que finaliza el turno de un jugador y pasa al siguiente al siguiente
 (define (plantar)
   (set! turno (remainder (+ turno 1) CantidadJugadores))
@@ -86,16 +87,22 @@
 (define (change_turn player_num)
   (cond ((and (equal? player_num 1) (>= (list_length jugadores 0) player_num)) (begin
                                                                                       (send player1_turn set-label "Playing!")
+                                                                                      (send player1-hit enable #t)
+                                                                                      (send player1-stand enable #t)
                                                                                       (set! current_turn player_num)))
   ((and (equal? player_num 2) (>= (list_length jugadores 0) player_num)) (begin
                                                                                        (send player1_turn set-label "Already played")
                                                                                        (send player1-stance-panel enable #f)
                                                                                        (send player2_turn set-label "Playing!")
+                                                                                       (send player2-hit enable #t)
+                                                                                       (send player2-stand enable #t)
                                                                                        (set! current_turn player_num)))
   ((and (equal? player_num 3) (>= (list_length jugadores 0) player_num)) (begin
                                                                                  (send player2_turn set-label "Already played")
                                                                                  (send player2-stance-panel enable #f)
                                                                                  (send player3_turn set-label "Playing")
+                                                                                 (send player3-hit enable #t)
+                                                                                 (send player3-stand enable #t)
                                                                                  (set! current_turn player_num)))
   (else
    (begin
@@ -110,23 +117,24 @@
 
 (define (update_cards player_num)#t)
 
+(define (validate_score player_num)
+  (cond
+    ((>= (suma player_num) 21) (cond
+                                      ((equal? player_num 3) (change_turn 0))
+                                      (else
+                                       (change_turn (+ player_num 1))
+                                       )
+                                      )
+                                     )
+    )
+  )
+
 ; Total game scene
 (define game_frame (new frame%
                    [label "Blackjack"]
                    [spacing game_spacing]
                    [min-width 1280]
                    [min-height 720]))
-
-;(define background_img (make-object bitmap% "imgs/background.jpg"))
-
-;(define canvas
-;  (instantiate canvas%
-;    (game_frame)
-;    (paint-callback
-;     (lambda (canvas dc)
-;       (send dc draw-bitmap background_img 0 0)))
-;    (min-width (send background_img get-width))
-;    (min-height (send background_img get-height))))
 
 
 ; Crupier scene (inside total game scene)
@@ -179,13 +187,17 @@
                                   [spacing (/ game_spacing 2)]
                                   [alignment '(center bottom)]))
 
-(new button% [parent player1-stance-panel]
-     [label "Hit"])
-
-(new button% [parent player1-stance-panel]
-     [label "Stand"]
+(define player1-hit (new button% [parent player1-stance-panel]
+     [label "Hit"]
+     [enabled #f]
      [callback (lambda (button event)
-                 (change_turn 2))])
+                 (begin (get_img (pedir current_turn) current_turn) (validate_score 1)))]))
+
+(define player1-stand (new button% [parent player1-stance-panel]
+     [label "Stand"]
+     [enabled #f]
+     [callback (lambda (button event)
+                 (change_turn 2))]))
 
 ; Player 2 scene (inside scene shared by all players)
 (define player2-panel (new vertical-panel%
@@ -209,13 +221,17 @@
                                   [spacing (/ game_spacing 2)]
                                   [alignment '(center bottom)]))
 
-(new button% [parent player2-stance-panel]
-     [label "Hit"])
-
-(new button% [parent player2-stance-panel]
-     [label "Stand"]
+(define player2-hit (new button% [parent player2-stance-panel]
+     [label "Hit"]
+     [enabled #f]
      [callback (lambda (button event)
-                 (change_turn 3))])
+                 (begin (get_img (pedir current_turn) current_turn) (validate_score 2)))]))
+
+(define player2-stand (new button% [parent player2-stance-panel]
+     [label "Stand"]
+     [enabled #f]
+     [callback (lambda (button event)
+                 (change_turn 3))]))
 
 ; Player 3 scene (inside scene shared by all players)
 (define player3-panel (new vertical-panel%
@@ -240,35 +256,39 @@
                                   [spacing (/ game_spacing 2)]
                                   [alignment '(center bottom)]))
 
-(new button% [parent player3-stance-panel]
-     [label "Hit"])
-
-(new button% [parent player3-stance-panel]
-     [label "Stand"]
+(define player3-hit (new button% [parent player3-stance-panel]
+     [label "Hit"]
+     [enabled #f]
      [callback (lambda (button event)
-                 (change_turn 4))])
+                 (begin (get_img (pedir current_turn) current_turn) (validate_score 3)))]))
+
+(define player3-stand (new button% [parent player3-stance-panel]
+     [label "Stand"]
+     [enabled #f]
+     [callback (lambda (button event)
+                 (change_turn 4))]))
 
 (define (get_img card player_num)
   (cond ((file-exists? (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))
          (cond
            ((equal? player_num 0) (cond ((equal? (list_length (car (cdr (car jugadores))) 0) 1)
                                          (new message% [parent crupier_cards]
-                 [label (read-bitmap (string-append "imgs/cards/back.png"))]))
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/back.png"))) 0.6))]))
                                         (else
                                          (new message% [parent crupier_cards]
-                 [label (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))]))))
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))]))))
             
            ((equal? player_num 1)
             (new message% [parent player1_cards]
-                 [label (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))]))
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))]))
            
            ((and (equal? player_num 2) (>= (list_length jugadores 0) 2))
             (new message% [parent player2_cards]
-                 [label (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))]))
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))]))
            
            ((and (equal? player_num 3) (>= (list_length jugadores 0) 3))
             (new message% [parent player3_cards]
-                 [label (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))]))
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))]))
            (else
            (write "Invalid player card assignment")))
          )
@@ -293,7 +313,11 @@
     ((and (>= (list_length X 0) 1) (<= (list_length X 0) 3)) (begin (set! jugadores (append jugadores (list (list (car X) '()))))
                                                                    (set_player_name (car X) (- (list_length jugadores 0) 1))
                                                                    (bCEj (cdr X))))
-        ((and (equal? X '()) (not (equal? jugadores '()))) (begin (change_turn 1) (set! CantidadJugadores (list_length jugadores 0)) (send game_frame show #t)))
+        ((and (equal? X '()) (not (equal? jugadores '()))) (begin
+                                                             (change_turn 1)
+                                                             (set! CantidadJugadores (list_length jugadores 0))
+                                                             (send game_frame show #t)
+                                                             (IniciarCartas (* 2 CantidadJugadores))))
         (else
          (write "Cant start game with given number of players"))))
 

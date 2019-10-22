@@ -81,7 +81,7 @@
   (cond
     [ (and
        (not (menor_igual_21 (sumar_cartas (mano_jug jugador))))
-       (carta_miembro "A" (mano_jug jugador))
+       (carta_miembro "As" (mano_jug jugador))
        )
       (- (sumar_cartas (mano_jug jugador)) 10)
       ]
