@@ -20,7 +20,6 @@
 
 
 (define mazo (combinar palos nombres valores))
-(define crupier '("Crupier" '()))
 (define jugadores '())
 (define conteo 52)
 (define current_turn 0)
@@ -75,17 +74,22 @@
                                                                                       (set! current_turn player_num)))
   ((and (equal? player_num 2) (>= (list_length jugadores 0) player_num)) (begin
                                                                                        (send player1_turn set-label "Already played")
+                                                                                       (send player1-stance-panel enable #f)
                                                                                        (send player2_turn set-label "Playing!")
                                                                                        (set! current_turn player_num)))
   ((and (equal? player_num 3) (>= (list_length jugadores 0) player_num)) (begin
                                                                                  (send player2_turn set-label "Already played")
+                                                                                 (send player2-stance-panel enable #f)
                                                                                  (send player3_turn set-label "Playing")
                                                                                  (set! current_turn player_num)))
   (else
    (begin
       (send player1_turn set-label "Already played")
+      (send player1-stance-panel enable #f)
       (send player2_turn set-label "Already played")
+      (send player2-stance-panel enable #f)
       (send player3_turn set-label "Already played")
+      (send player3-stance-panel enable #f)
       (send crupier_turn set-label "Playing!")))))
 
 (define (update_cards player_num)#t)
@@ -93,7 +97,9 @@
 ; Total game scene
 (define game_frame (new frame%
                    [label "Blackjack"]
-                   [spacing game_spacing]))
+                   [spacing game_spacing]
+                   [min-width 1280]
+                   [min-height 720]))
 
 ;(define background_img (make-object bitmap% "imgs/background.jpg"))
 
@@ -107,30 +113,6 @@
 ;    (min-height (send background_img get-height))))
 
 
-; WIP IMAGE PRODUCTION
-(define (get_img card player_num)
-  (cond ((file-exists? (string-append "imgs/cards" (car card) (car (cdr card)) ".png"))
-         (cond
-           ((equal? player_num 1)
-            (new message% [parent player1-panel]
-                 [label (read-bitmap (string-append "imgs/cards" (car card) (car (cdr card)) ".png"))]))
-           
-           ((and (equal? player_num 2) (>= (list_length jugadores 0) 2))
-            (new message% [parent player2-panel]
-                 [label (read-bitmap (string-append "imgs/cards" (car card) (car (cdr card)) ".png"))]))
-           
-           ((and (equal? player_num 3) (>= (list_length jugadores 0) 3))
-            (new message% [parent player3-panel]
-                 [label (read-bitmap (string-append "imgs/cards" (car card) (car (cdr card)) ".png"))]))
-           (else
-           (write "Invalid player card assignment")))
-        )
-        (else
-         (write "Invalid file path"))))
-                                                                                        
-
-
-
 ; Crupier scene (inside total game scene)
 (define crupier-panel (new vertical-panel%
                            [parent game_frame]
@@ -140,8 +122,7 @@
      [label "Crupier"])
 
 
-(define crupier_cards (new message% [parent crupier-panel]
-                 [label ""]))
+(define crupier_cards (new horizontal-panel% [parent crupier-panel]))
 
 (define crupier_turn (new message% [parent crupier-panel]
                  [label "Not your turn"]))
@@ -169,8 +150,7 @@
 (define player1_name (new message% [parent player1-panel]
                           [label ""]))
 
-(define player1_cards (new message% [parent player1-panel]
-                 [label ""]))
+(define player1_cards (new horizontal-panel% [parent player1-panel]))
 
 (define player1_turn (new message% [parent player1-panel]
                  [label "Not your turn"]))
@@ -200,8 +180,7 @@
 (define player2_name (new message% [parent player2-panel]
                           [label ""]))
 
-(define player2_cards (new message% [parent player2-panel]
-                 [label ""]))
+(define player2_cards (new horizontal-panel% [parent player2-panel]))
 
 (define player2_turn (new message% [parent player2-panel]
                  [label "Not your turn"]))
@@ -231,11 +210,7 @@
 (define player3_name (new message% [parent player3-panel]
                           [label ""]))
 
-(define player3-cards-panel (new horizontal-panel%
-                                 [parent player3-panel]))
-
-(define player_cards (new message% [parent player3-panel]
-                 [label (read-bitmap "imgs/cards/treboles2.png")]))
+(define player3_cards (new horizontal-panel% [parent player3-panel]))
 
 
 (define player3_turn (new message% [parent player3-panel]
@@ -256,6 +231,26 @@
      [label "Stand"]
      [callback (lambda (button event)
                  (change_turn 4))])
+
+(define (get_img card player_num)
+  (cond ((file-exists? (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))
+         (cond
+           ((equal? player_num 1)
+            (new message% [parent player1_cards]
+                 [label (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))]))
+           
+           ((and (equal? player_num 2) (>= (list_length jugadores 0) 2))
+            (new message% [parent player2_cards]
+                 [label (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))]))
+           
+           ((and (equal? player_num 3) (>= (list_length jugadores 0) 3))
+            (new message% [parent player3_cards]
+                 [label (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))]))
+           (else
+           (write "Invalid player card assignment")))
+         )
+        (else
+         (write "Invalid file path"))))
 
 ;; Functions utilized to initialize game
 (define (list_length arr length)
