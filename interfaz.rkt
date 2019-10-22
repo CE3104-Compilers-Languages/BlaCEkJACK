@@ -97,6 +97,7 @@
                                                                                  (set! current_turn player_num)))
   (else
    (begin
+     (set! current_turn 0)
       (send player1_turn set-label "Already played")
       (send player1-stance-panel enable #f)
       (send player2_turn set-label "Already played")
@@ -278,8 +279,10 @@
         ((equal? num 3) (begin (send player3-panel enable #t) (send player3_name set-label name)))))
 
 (define (bCEj X)
-  (cond ((and (>= (list_length X 0) 1) (<= (list_length X 0) 3)) (begin (set! jugadores (append jugadores (list (list (car X) '()))))
-                                                                   (set_player_name (car X) (list_length jugadores 0))
+  (cond
+    ((equal? (list_length jugadores 0) 0) (begin (set! jugadores (append jugadores (list '("crupier" '())))) (bCEj X)))
+    ((and (>= (list_length X 0) 1) (<= (list_length X 0) 3)) (begin (set! jugadores (append jugadores (list (list (car X) '()))))
+                                                                   (set_player_name (car X) (- (list_length jugadores 0) 1))
                                                                    (bCEj (cdr X))))
         ((and (equal? X '()) (not (equal? jugadores '()))) (begin (change_turn 1) (send game_frame show #t)))
         (else
