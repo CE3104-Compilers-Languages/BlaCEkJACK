@@ -50,7 +50,9 @@
                            cond ((zero? Ncartas)
                                  )
                                 (else
-                                 (pedir (remainder Ncartas CantidadJugadores))
+                                 (let ([turn (remainder Ncartas CantidadJugadores)])
+                                   (get_img (pedir turn) turn)
+                                   )
                                  (IniciarCartas (- Ncartas 1)))
                                 ))
 ;Método que finaliza el turno de un jugador y pasa al siguiente al siguiente
