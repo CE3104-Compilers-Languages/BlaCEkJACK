@@ -280,11 +280,11 @@
 
 (define (bCEj X)
   (cond
-    ((equal? (list_length jugadores 0) 0) (begin (set! jugadores (append jugadores (list '("crupier" '())))) (bCEj X)))
+    ((equal? (list_length jugadores 0) 0) (begin (set! jugadores (append jugadores (list (list "crupier" '())))) (bCEj X)))
     ((and (>= (list_length X 0) 1) (<= (list_length X 0) 3)) (begin (set! jugadores (append jugadores (list (list (car X) '()))))
                                                                    (set_player_name (car X) (- (list_length jugadores 0) 1))
                                                                    (bCEj (cdr X))))
-        ((and (equal? X '()) (not (equal? jugadores '()))) (begin (change_turn 1) (send game_frame show #t)))
+        ((and (equal? X '()) (not (equal? jugadores '()))) (begin (change_turn 1) (set! CantidadJugadores (list_length jugadores 0)) (send game_frame show #t)))
         (else
          (write "Cant start game with given number of players"))))
 
