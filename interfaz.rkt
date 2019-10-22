@@ -4,7 +4,7 @@
 (#%require (only racket/base random))
 (require "logica.rkt")
 
-
+; Variables globales
 (define palos '("corazones"
                 "diamantes"
                 "plicas"
@@ -18,13 +18,13 @@
                 5 6 7 8
                 9 10 10 10 10))
 
-
 (define mazo (combinar palos nombres valores))
 (define jugadores '())
 (define conteo 52)
 (define current_turn 0)
 (define turno 1)
 (define CantidadJugadores 4)
+(define game_spacing 10)
 
 (define (GenerarJugadores nombres)
   (set! jugadores (AsignarNombres nombres))
@@ -56,34 +56,20 @@
                                  (IniciarCartas (- Ncartas 1)))
                                 ))
 
-;Método que finaliza el turno de un jugador y pasa al siguiente al siguiente
+; Método que finaliza el turno de un jugador y pasa al siguiente al siguiente
 (define (plantar)
   (set! turno (remainder (+ turno 1) CantidadJugadores))
   turno
   )
-;
-
-;Método que evalúa si las cartas del crupier suman 16 o menos
-;de ser así pide una carta más para el crupier y devuelve un True
-;de lo contrario devuelve un False para avisar que no se debe volver a pedir
-(define (pedirCrupier) (
-                        cond (< (suma 0) 17
-                              (pedir 0)
-                              #t)
-                             (else
-                              #f)
-                             ))
 
 
+; Devuelve el puntaje total de un dado jugador según las cartas que posean
 (define (suma njugador)
   (sumar_jugador_aux njugador jugadores 0)
   )
 
 
-
-; Variables globales
-(define game_spacing 10)
-
+; Cambia el turno según el jugador especificado
 (define (change_turn player_num)
   (cond
     ((and (equal? player_num 1) (>= (list_length jugadores 0) (+ player_num 1))) (begin
@@ -119,8 +105,8 @@
       (send crupier_turn set-label "Playing!")
       (crupier_play)))))
 
-(define (update_cards player_num)#t)
 
+; Revisa que el puntaje de un jugador sea menor a 21 para pedir una siguiente carta. De otro modo pasa el turno.
 (define (validate_score player_num)
   (cond
     ((>= (suma player_num) 21) (cond
@@ -134,6 +120,7 @@
    )
  )
 
+; Le permite al crupier actuar como jugador y una vez termina procede a pedir la tabla de puntuacion
 (define (crupier_play)
   (cond
     ((< (suma 0) 16) (begin (sleep/yield 2) (get_card (pedir 0) 0) (crupier_play)))
@@ -183,11 +170,12 @@
 ; Scene shared by all players (inside Total game scene)
 (define players-panel (new horizontal-panel%
                            [parent game_frame]
-                           [spacing (* game_spacing 2)]))
+                           [spacing 1]))
 
 ; Player 1 scene (inside scene shared by all players)
 (define player1-panel (new vertical-panel%
                            [parent players-panel]
+                           [style '(border deleted)]
                            [enabled #f]
                            [spacing game_spacing]))
 
@@ -230,6 +218,7 @@
 ; Player 2 scene (inside scene shared by all players)
 (define player2-panel (new vertical-panel%
                            [parent players-panel]
+                           [style '(border deleted)]
                            [enabled #f]
                            [spacing game_spacing]))
 
@@ -267,6 +256,7 @@
 ; Player 3 scene (inside scene shared by all players)
 (define player3-panel (new vertical-panel%
                            [parent players-panel]
+                           [style '(border deleted)]
                            [enabled #f]
                            [spacing game_spacing]))
 
@@ -302,6 +292,7 @@
      [callback (lambda (button event)
                  (change_turn 4))]))
 
+; Gets image from the given card and adds it to the corresponding player of the given player number to their card panel
 (define (get_card card player_num)
   (cond ((file-exists? (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))
          (cond
@@ -339,7 +330,10 @@
         (else
          (write "Invalid file path"))))
 
+
 ;; Functions utilized to initialize game
+
+; Returns list length
 (define (list_length arr length)
   (cond ((equal? arr '()) length)
         (else
@@ -347,10 +341,11 @@
 
 ; Names players on gui
 (define (set_player_name name num)
-  (cond ((equal? num 1) (begin (send player1-panel enable #t) (send player1_name set-label name)))
-        ((equal? num 2) (begin (send player2-panel enable #t) (send player2_name set-label name)))
-        ((equal? num 3) (begin (send player3-panel enable #t) (send player3_name set-label name)))))
+  (cond ((equal? num 1) (begin (send player1-panel enable #t) (send player1_name set-label name) (send players-panel add-child player1-panel)))
+        ((equal? num 2) (begin (send player2-panel enable #t) (send player2_name set-label name) (send players-panel add-child player2-panel)))
+        ((equal? num 3) (begin (send player3-panel enable #t) (send player3_name set-label name) (send players-panel add-child player3-panel)))))
 
+; Initializes game setting up necessary logic and gui elements
 (define (bCEj X)
   (cond
     ((equal? (list_length jugadores 0) 0) (begin (set! jugadores (append jugadores (list (list "crupier" '())))) (bCEj X)))
@@ -358,13 +353,13 @@
                                                                (set! jugadores (append jugadores (list (list (car X) '()))))
                                                                (set_player_name (car X) (- (list_length jugadores 0) 1))
                                                                (bCEj (cdr X))))
-        ((and (equal? X '()) (not (equal? jugadores '()))) (begin
-                                                             (change_turn 1)
-                                                             (set! CantidadJugadores (list_length jugadores 0))
-                                                             (send game_frame show #t)
-                                                             (IniciarCartas (* 2 CantidadJugadores))))
-        (else
-         (write "Cant start game with given number of players"))))
+    ((and (equal? X '()) (not (equal? jugadores '()))) (begin
+                                                         (change_turn 1)
+                                                         (set! CantidadJugadores (list_length jugadores 0))
+                                                         (send game_frame show #t)
+                                                         (IniciarCartas (* 2 CantidadJugadores))))
+    (else
+     (write "Cant start game with given amount of players"))))
 
 
 
