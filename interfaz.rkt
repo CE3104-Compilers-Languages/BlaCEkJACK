@@ -249,6 +249,13 @@
 (define (get_img card player_num)
   (cond ((file-exists? (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))
          (cond
+           ((equal? player_num 0) (cond ((equal? (list_length (car (cdr (car jugadores))) 0) 1)
+                                         (new message% [parent crupier_cards]
+                 [label (read-bitmap (string-append "imgs/cards/back.png"))]))
+                                        (else
+                                         (new message% [parent crupier_cards]
+                 [label (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))]))))
+            
            ((equal? player_num 1)
             (new message% [parent player1_cards]
                  [label (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))]))
