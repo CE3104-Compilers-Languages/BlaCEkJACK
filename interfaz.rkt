@@ -123,9 +123,11 @@
 ; Le permite al crupier actuar como jugador y una vez termina procede a pedir la tabla de puntuacion
 (define (crupier_play)
   (cond
-    ((< (suma 0) 16) (begin (sleep/yield 2) (get_card (pedir 0) 0) (crupier_play)))
+    ((< (suma 0) 16) (begin (sleep/yield 1) (get_card (pedir 0) 0) (crupier_play) (sleep/yield 1)))
     (else
-     (begin (sleep/yield 2) (send game_frame show #f))
+     (begin
+       (send crupier_score set-label (string-append "Score : " (number->string (suma 0))))
+       (sleep/yield 2) (send game_frame show #f))
      )
     )
   )
@@ -159,7 +161,7 @@
                  [label "Not your turn"]))
 
 (define crupier_score (new message% [parent crupier-panel]
-                           [label "Score : 0"]))
+                           [label "Score : ?"]))
 
 
 (define crupier-stance-panel (new horizontal-panel%
@@ -299,12 +301,10 @@
            ((equal? player_num 0) (cond ((equal? (list_length (car (cdr (car jugadores))) 0) 1)
                                          (begin
                                          (new message% [parent crupier_cards]
-                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/back.png"))) 0.6))]))
-                                         (send crupier_score set-label (string-append "Score : " (number->string (suma 0)))))
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/back.png"))) 0.6))])))
                                         (else (begin
                                          (new message% [parent crupier_cards]
-                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))]))
-                                              (send crupier_score set-label (string-append "Score : " (number->string (suma 0)))))))
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))])))))
             
            ((equal? player_num 1)
             (begin
