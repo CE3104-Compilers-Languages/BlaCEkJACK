@@ -26,6 +26,10 @@
 (define CantidadJugadores 4)
 (define game_spacing 10)
 
+(define big_font (make-object font% 20 'modern))
+(define medium_font (make-object font% 16 'modern))
+(define small_font (make-object font% 12 'modern))
+
 (define (GenerarJugadores nombres)
   (set! jugadores (AsignarNombres nombres))
   (set! CantidadJugadores (+ 1 (len nombres)))
@@ -152,7 +156,8 @@
 
 (new message%
      [parent crupier-panel]
-     [label "Crupier"])
+     [label "Crupier"]
+     [font big_font])
 
 
 (define crupier_cards (new horizontal-panel%
@@ -162,6 +167,7 @@
 
 (define crupier_turn (new message% [parent crupier-panel]
                  [label "Not your turn"]))
+
 
 (define crupier_score (new message% [parent crupier-panel]
                            [label "Score : ?"]))
@@ -186,6 +192,7 @@
 
 (define player1_name (new message%
                           [parent player1-panel]
+                          [font big_font]
                           [label ""]))
 
 (define player1_cards (new horizontal-panel%
@@ -195,10 +202,12 @@
 
 (define player1_turn (new message%
                           [parent player1-panel]
+                          [font medium_font]
                           [label "Not your turn"]))
 
 (define player1_score (new message%
                            [parent player1-panel]
+                           [font medium_font]
                            [label "Score : 0"]
                            [auto-resize #t]))
 
@@ -210,12 +219,14 @@
 (define player1-hit (new button% [parent player1-stance-panel]
      [label "Hit"]
      [enabled #f]
+     [font small_font]
      [callback (lambda (button event)
                  (begin (get_card (pedir current_turn) current_turn) (validate_score 1)))]))
 
 (define player1-stand (new button%
                            [parent player1-stance-panel]
                            [label "Stand"]
+                           [font small_font]
                            [enabled #f]
                            [callback (lambda (button event)
                  (change_turn 2))]))
@@ -227,7 +238,9 @@
                            [enabled #f]
                            [spacing game_spacing]))
 
-(define player2_name (new message% [parent player2-panel]
+(define player2_name (new message%
+                          [parent player2-panel]
+                          [font big_font]
                           [label ""]))
 
 (define player2_cards (new horizontal-panel%
@@ -236,10 +249,12 @@
                            [style '(auto-hscroll)]))
 
 (define player2_turn (new message% [parent player2-panel]
-                 [label "Not your turn"]))
+                 [label "Not your turn"]
+                 [font medium_font]))
 
 (define player2_score (new message% [parent player2-panel]
-                           [label "Score : 0"]))
+                           [label "Score : 0"]
+                           [font medium_font]))
 
 (define player2-stance-panel (new horizontal-panel%
                                   [parent player2-panel]
@@ -249,12 +264,14 @@
 (define player2-hit (new button% [parent player2-stance-panel]
      [label "Hit"]
      [enabled #f]
+     [font small_font]
      [callback (lambda (button event)
                  (begin (get_card (pedir current_turn) current_turn) (validate_score 2)))]))
 
 (define player2-stand (new button% [parent player2-stance-panel]
      [label "Stand"]
      [enabled #f]
+     [font small_font]
      [callback (lambda (button event)
                  (change_turn 3))]))
 
@@ -263,9 +280,12 @@
                            [parent players-panel]
                            [style '(border deleted)]
                            [enabled #f]
+                           [alignment '(center center)]
                            [spacing game_spacing]))
 
-(define player3_name (new message% [parent player3-panel]
+(define player3_name (new message%
+                          [parent player3-panel]
+                          [font big_font]
                           [label ""]))
 
 (define player3_cards (new horizontal-panel%
@@ -275,10 +295,12 @@
 
 
 (define player3_turn (new message% [parent player3-panel]
-                 [label "Not your turn"]))
+                 [label "Not your turn"]
+                 [font medium_font]))
 
 (define player3_score (new message% [parent player3-panel]
-                           [label "Score : 0"]))
+                           [label "Score : 0"]
+                           [font medium_font]))
 
 (define player3-stance-panel (new horizontal-panel%
                                   [parent player3-panel]
@@ -288,12 +310,14 @@
 (define player3-hit (new button% [parent player3-stance-panel]
      [label "Hit"]
      [enabled #f]
+     [font small_font]
      [callback (lambda (button event)
                  (begin (get_card (pedir current_turn) current_turn) (validate_score 3)))]))
 
 (define player3-stand (new button% [parent player3-stance-panel]
      [label "Stand"]
      [enabled #f]
+     [font small_font]
      [callback (lambda (button event)
                  (change_turn 4))]))
 
@@ -519,7 +543,6 @@
      )
     )
   )
-
 
 
 
