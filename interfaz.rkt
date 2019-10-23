@@ -365,7 +365,7 @@
 
 
 
-
+(define window_width 45)
 (define window_height 30)
 (define cell_width (/ window_width 3))
 (define cell_height (/ window_height 3))
@@ -467,6 +467,13 @@
      ))
 
 ; ACTUALIZADA
+; funcion que despliega la tabla de resultados
+
+(define (ventana_resultados jugadores)
+  (mostrar_resultado_final (conteo_final (cdr jugadores) (sumar_jug (car jugadores)) '()) 0)
+  )
+
+; ACTUALIZADA
 ; funcion que muestra una tabla con las puntuaciones finales de los jugadores
 ; recibe un conteo final y un contador
 (define (mostrar_resultado_final conteo_final cont)
@@ -492,7 +499,7 @@
         (else "Ya no puedo ingresar mas jugadores")
         )
 
-   )
+   )  
      )
   
   )
@@ -514,4 +521,3 @@
 
 
 
-(define window_width 45)

@@ -141,7 +141,7 @@
     (list
     (list
      (get_nombre (car jugadores))
-    (sumar_cartas (mano_jug(car jugadores)))
+    (sumar_jug (car jugadores))
     (estado_final (car jugadores) punt_crupier)
     )
     )
