@@ -30,15 +30,7 @@
 (define medium_font (make-object font% 16 'modern))
 (define small_font (make-object font% 12 'modern))
 
-(define (GenerarJugadores nombres)
-  (set! jugadores (AsignarNombres nombres))
-  (set! CantidadJugadores (+ 1 (len nombres)))
-  )
 
-(define (IniciarJuego nombres)
-  (GenerarJugadores nombres)
-  (IniciarCartas (* 2 CantidadJugadores))
-  )
 
 ;Método que actualiza los mazos de la partida al pedir una nueva carta
 (define (pedir Njugador)
