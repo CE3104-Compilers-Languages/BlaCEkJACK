@@ -272,30 +272,6 @@
                                ))
 
 
-;Método que añade el crupier a la lista de jugadores
-(provide AsignarNombres)
-(define (AsignarNombres nombres)
-  (cons (list "Crupier" (list))
-  (AsignarNombres-aux nombres (list)))
-  )
-
-;Método que toma una lista vacía y pone jugadores en la lista
-(define (AsignarNombres-aux nombres lista)
-  (cond
-    [(null? nombres) '()]
-    (else
-     (append
-    (list
-    (list
-     (car nombres)
-     '()
-    )
-    )
-   (AsignarNombres-aux (cdr nombres) lista)
-   )
-     )
-    )
-  )
 
 ;Toma la lista de jugadores y la ordena según el criterio de "mejor?"
 (provide ordenar)
@@ -336,12 +312,12 @@
                         #t)
                        ((> sumaCrupier sumaJugador)
                         #f)
-                       ((< sumaJugador 21)
+                       ((< sumaJugador 21) ;Empate formal
                         #f)
                        ((equal? cartasCrupier 2)
                         #f)
                        ((equal? cartasJugador 2)
                         #t)
-                       (else
+                       (else ;Empate formal
                         #f)
                        ))
