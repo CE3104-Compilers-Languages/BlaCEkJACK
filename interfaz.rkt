@@ -26,6 +26,7 @@
 (define CantidadJugadores 4)
 (define game_spacing 10)
 
+(define huge_font (make-object font% 30 'modern))
 (define big_font (make-object font% 20 'modern))
 (define medium_font (make-object font% 16 'modern))
 (define small_font (make-object font% 12 'modern))
@@ -139,11 +140,68 @@
     )
   )
     
-        
+
+;;;;;;;;;;;;;;;;;;;;;
+;;;;;; GUI ;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;
+
+
+; Main Menu
+(define menu_frame (new frame%
+                   [label "BlaCEkjack"]
+                   [spacing game_spacing]
+                   [min-width 1280]
+                   [min-height 720]))
+
+(new message%
+     [parent menu_frame]
+     [label "BlaCEkjack"]
+     [vert-margin (* game_spacing 5)]
+     [font huge_font])
+
+(define players-input-panel (new vertical-panel%
+                                 [parent menu_frame]
+                                 [spacing (* game_spacing 8)]
+                                 [horiz-margin (* game_spacing 20)]
+                                 [alignment '(center center)]))
+
+(define input1 (new text-field%
+                    [label "Jugador 1"]
+                    [parent players-input-panel]
+                    [font medium_font]))
+
+(define input2 (new text-field%
+                    [label "Jugador 2"]
+                    [parent players-input-panel]
+                    [font medium_font]))
+
+(define input3 (new text-field%
+                    [label "Jugador 3"]
+                    [parent players-input-panel]
+                    [font medium_font]))
+
+(define player_names '())
+
+(define (validate_names)
+  (cond ((and (not (equal? (send input1 get-value) "")) (not (equal? (send input2 get-value) "")) (not (equal? (send input3 get-value) "")))
+              (set! player_names (list (send input1 get-value) (send input2 get-value) (send input3 get-value))))
+         ((and (not (equal? (send input1 get-value) "")) (not (equal? (send input2 get-value) "")))
+              (set! player_names (list (send input1 get-value) (send input2 get-value))))
+         ((and (not (equal? (send input1 get-value) "")))
+              (set! player_names (list (send input1 get-value))))))
+                       
+
+(define start_game_button (new button%[parent players-input-panel]
+     [label "Comenzar"]
+     [font medium_font]
+     [callback (lambda (button event)
+                 (begin (validate_names) (cond ((not (equal? player_names '())) (begin (bCEj player_names) (send menu_frame show #f))))))]))
+
+                   
 
 ; Total game scene
 (define game_frame (new frame%
-                   [label "Blackjack"]
+                   [label "BlaCEkjack"]
                    [spacing game_spacing]
                    [min-width 1280]
                    [min-height 720]))
@@ -216,7 +274,7 @@
                                   [alignment '(center center)]
                                   [spacing (/ game_spacing 2)]))
 
-(define player1-hit (new button% [parent player1-stance-panel]
+(define player1-hit (new button%[parent player1-stance-panel]
      [label "Hit"]
      [enabled #f]
      [font small_font]
@@ -545,5 +603,6 @@
   )
 
 
-
+;; Initializes main menu
+(send menu_frame show #t)
 
