@@ -123,11 +123,14 @@
 ; Le permite al crupier actuar como jugador y una vez termina procede a pedir la tabla de puntuacion
 (define (crupier_play)
   (cond
-    ((<= (suma 0) 16) (begin (sleep/yield 1) (get_card (pedir 0) 0) (crupier_play) (sleep/yield 1)))
+    ((<= (suma 0) 16) (begin (sleep/yield 1) (get_card (pedir 0) 0) (sleep/yield 2) (crupier_play)))
     (else
      (begin
        (send crupier_score set-label (string-append "Score : " (number->string (suma 0))))
-       (sleep/yield 2) (ventana_resultados jugadores))
+       (send (car (send crupier_cards get-children))
+             set-label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (caddr (caar (cdar jugadores))) (cadr (caar (cdar jugadores))) ".png"))) 0.9)))
+       (sleep/yield 2)
+       (ventana_resultados jugadores))
      )
     )
   )
