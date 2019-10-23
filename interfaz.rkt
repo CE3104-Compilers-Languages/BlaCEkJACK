@@ -549,7 +549,7 @@
 ; funcion que despliega la tabla de resultados
 
 (define (ventana_resultados jugadores)
-  (mostrar_resultado_final (conteo_final (cdr jugadores) (sumar_jug (car jugadores)) '()) 0)
+  (mostrar_resultado_final (conteo_final (ordenar (cdr jugadores)) (sumar_jug (car jugadores)) '()) 0)
   )
 
 ; ACTUALIZADA
