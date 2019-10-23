@@ -123,11 +123,11 @@
 ; Le permite al crupier actuar como jugador y una vez termina procede a pedir la tabla de puntuacion
 (define (crupier_play)
   (cond
-    ((< (suma 0) 16) (begin (sleep/yield 1) (get_card (pedir 0) 0) (crupier_play) (sleep/yield 1)))
+    ((<= (suma 0) 16) (begin (sleep/yield 1) (get_card (pedir 0) 0) (crupier_play) (sleep/yield 1)))
     (else
      (begin
        (send crupier_score set-label (string-append "Score : " (number->string (suma 0))))
-       (sleep/yield 2) (send game_frame show #f))
+       (sleep/yield 2) (ventana_resultados jugadores))
      )
     )
   )
