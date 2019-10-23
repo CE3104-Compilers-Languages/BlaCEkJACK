@@ -22,7 +22,6 @@
 (define jugadores '())
 (define conteo 52)
 (define current_turn 0)
-(define turno 1)
 (define CantidadJugadores 4)
 (define game_spacing 10)
 
@@ -61,11 +60,6 @@
                                  (IniciarCartas (- Ncartas 1)))
                                 ))
 
-; Método que finaliza el turno de un jugador y pasa al siguiente al siguiente
-(define (plantar)
-  (set! turno (remainder (+ turno 1) CantidadJugadores))
-  turno
-  )
 
 
 ; Devuelve el puntaje total de un dado jugador según las cartas que posean

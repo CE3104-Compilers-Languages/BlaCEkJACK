@@ -297,3 +297,51 @@
     )
   )
 
+;Toma la lista de jugadores y la ordena según el criterio de "mejor?"
+(provide ordenar)
+(define (ordenar jugadores) (
+                             cond ((null? jugadores)
+                                   '())
+                                  (else
+                                   (let ([i (maximo-aux jugadores 0 0 0 0)])
+                                     (cons
+                                      (get jugadores i)
+                                      (ordenar (delete jugadores i)))
+                                     )
+                                    )
+                                  ))
+
+;Metodo para sacar el indice del jugador con el mayor puntaje
+(define (maximo-aux jugadores i i-aux val cartas) (
+                            cond((null? jugadores)
+                                 i)
+                                (else
+                                 (cond
+                                   ((mejor? (sumar_jugador_aux 0 jugadores 0) val (len (cdar jugadores)) cartas)
+                                    (maximo-aux (cdr jugadores) i-aux (+ 1 i-aux) (sumar_jugador_aux 0 jugadores 0) (len (cdar jugadores))))
+                                   (else
+                                    (maximo-aux (cdr jugadores) i (+ 1 i-aux) val cartas))
+                                   )
+                                 )
+                             ))
+
+;Determina si una mano es superior basado en la suma de sus cartas y la cantidad de cartas en la mano
+(define (mejor? sumaJugador sumaCrupier cartasJugador cartasCrupier) (
+                      cond
+                       ((> sumaJugador 21)
+                        #f)
+                       ((> sumaCrupier 21)
+                        #t)
+                       ((> sumaJugador sumaCrupier)
+                        #t)
+                       ((> sumaCrupier sumaJugador)
+                        #f)
+                       ((< sumaJugador 21)
+                        #f)
+                       ((equal? cartasCrupier 2)
+                        #f)
+                       ((equal? cartasJugador 2)
+                        #t)
+                       (else
+                        #f)
+                       ))
