@@ -606,6 +606,7 @@
   
   )
 
+; Suma el puntaje de el jugador numero "njugador" especifidado dentro de la lista "lista" que contiene jugadores
 (define (sumar_jugador njugador lista)
   (sumar_jugador_aux njugador lista 0)
   )
