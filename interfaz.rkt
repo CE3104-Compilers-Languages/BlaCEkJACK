@@ -4,6 +4,10 @@
 (#%require (only racket/base random))
 (require "logica.rkt")
 
+;;;;;;;;;;;;;;;;;
+;;; Logica GUI ;;
+;;;;;;;;;;;;;;;;;
+
 ; Variables globales
 (define palos '("corazones"
                 "diamantes"
@@ -125,7 +129,7 @@
    )
  )
 
-; Le permite al crupier actuar como jugador y una vez termina procede a pedir la tabla de puntuacion
+; Le permite al crupier actuar como jugador. De tener un puntaje menor o igual a 16, continúa pidiendo cartas. Una vez termina procede a pedir la tabla de puntuación.
 (define (crupier_play)
   (cond
     ((<= (suma 0) 16) (begin (sleep/yield 1) (get_card (pedir 0) 0) (sleep/yield 2) (crupier_play)))
@@ -139,7 +143,52 @@
      )
     )
   )
-    
+
+; Toma los nombres dados en el menu principal y construye la interfaz del juego segun
+; la cantidad de jugadores ingresados y sus nombres.
+(define (validate_names)
+  (cond ((and (not (equal? (send input1 get-value) "")) (not (equal? (send input2 get-value) "")) (not (equal? (send input3 get-value) "")))
+              (set! player_names (list (send input1 get-value) (send input2 get-value) (send input3 get-value))))
+         ((and (not (equal? (send input1 get-value) "")) (not (equal? (send input2 get-value) "")))
+              (set! player_names (list (send input1 get-value) (send input2 get-value))))
+         ((and (not (equal? (send input1 get-value) "")))
+              (set! player_names (list (send input1 get-value))))))
+
+; Consigue imagen de la carta dada y la anade al panel de cartas del jugador correspondiente identificado con player_num.
+(define (get_card card player_num)
+  (cond ((file-exists? (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))
+         (cond
+           ((equal? player_num 0) (cond ((equal? (list_length (car (cdr (car jugadores))) 0) 1)
+                                         (begin
+                                         (new message% [parent crupier_cards]
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/back.png"))) 0.6))])))
+                                        (else (begin
+                                         (new message% [parent crupier_cards]
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))])))))
+            
+           ((equal? player_num 1)
+            (begin
+            (new message% [parent player1_cards]
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))])
+            (send player1_score set-label (string-append "Score : " (number->string (suma 1))))))
+           
+           ((and (equal? player_num 2) (>= (list_length jugadores 0) 2))
+            (begin
+            (new message% [parent player2_cards]
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))])
+            (send player2_score set-label (string-append "Score : " (number->string (suma 2))))))
+           
+           ((and (equal? player_num 3) (>= (list_length jugadores 0) 3))
+            (begin
+            (new message% [parent player3_cards]
+                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))])
+            (send player3_score set-label (string-append "Score : " (number->string (suma 3))))))
+           
+           (else
+           (write "Invalid player card assignment")))
+         )
+        (else
+         (write "Invalid file path"))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;;;;; GUI ;;;;;;;;;;
@@ -152,6 +201,8 @@
                    [spacing game_spacing]
                    [min-width 1280]
                    [min-height 720]))
+
+(define player_names '())
 
 (new message%
      [parent menu_frame]
@@ -179,16 +230,6 @@
                     [label "Jugador 3"]
                     [parent players-input-panel]
                     [font medium_font]))
-
-(define player_names '())
-
-(define (validate_names)
-  (cond ((and (not (equal? (send input1 get-value) "")) (not (equal? (send input2 get-value) "")) (not (equal? (send input3 get-value) "")))
-              (set! player_names (list (send input1 get-value) (send input2 get-value) (send input3 get-value))))
-         ((and (not (equal? (send input1 get-value) "")) (not (equal? (send input2 get-value) "")))
-              (set! player_names (list (send input1 get-value) (send input2 get-value))))
-         ((and (not (equal? (send input1 get-value) "")))
-              (set! player_names (list (send input1 get-value))))))
                        
 
 (define start_game_button (new button%[parent players-input-panel]
@@ -379,58 +420,24 @@
      [callback (lambda (button event)
                  (change_turn 4))]))
 
-; Gets image from the given card and adds it to the corresponding player of the given player number to their card panel
-(define (get_card card player_num)
-  (cond ((file-exists? (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))
-         (cond
-           ((equal? player_num 0) (cond ((equal? (list_length (car (cdr (car jugadores))) 0) 1)
-                                         (begin
-                                         (new message% [parent crupier_cards]
-                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/back.png"))) 0.6))])))
-                                        (else (begin
-                                         (new message% [parent crupier_cards]
-                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))])))))
-            
-           ((equal? player_num 1)
-            (begin
-            (new message% [parent player1_cards]
-                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))])
-            (send player1_score set-label (string-append "Score : " (number->string (suma 1))))))
-           
-           ((and (equal? player_num 2) (>= (list_length jugadores 0) 2))
-            (begin
-            (new message% [parent player2_cards]
-                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))])
-            (send player2_score set-label (string-append "Score : " (number->string (suma 2))))))
-           
-           ((and (equal? player_num 3) (>= (list_length jugadores 0) 3))
-            (begin
-            (new message% [parent player3_cards]
-                 [label (pict->bitmap (scale (bitmap (read-bitmap (string-append "imgs/cards/" (car (cdr (cdr card))) (car (cdr card)) ".png"))) 0.9))])
-            (send player3_score set-label (string-append "Score : " (number->string (suma 3))))))
-           
-           (else
-           (write "Invalid player card assignment")))
-         )
-        (else
-         (write "Invalid file path"))))
 
+;;;;;;;;;;;;;;;;;
+;;; GUI SETUP ;;;
+;;;;;;;;;;;;;;;;;
 
-;; Functions utilized to initialize game
-
-; Returns list length
+; Devuelve "length" que sera el largo de la lista "arr".
 (define (list_length arr length)
   (cond ((equal? arr '()) length)
         (else
          (list_length (cdr arr) (+ length 1)))))
 
-; Names players on gui
+; Nombra "name" a un jugador identificado con "num" a la interfaz.
 (define (set_player_name name num)
   (cond ((equal? num 1) (begin (send player1-panel enable #t) (send player1_name set-label name) (send players-panel add-child player1-panel)))
         ((equal? num 2) (begin (send player2-panel enable #t) (send player2_name set-label name) (send players-panel add-child player2-panel)))
         ((equal? num 3) (begin (send player3-panel enable #t) (send player3_name set-label name) (send players-panel add-child player3-panel)))))
 
-; Initializes game setting up necessary logic and gui elements
+; Inicializa el juego configurando los elementos necesarios de logica e interfaz.
 (define (bCEj X)
   (cond
     ((equal? (list_length jugadores 0) 0) (begin (set! jugadores (append jugadores (list (list "crupier" '())))) (bCEj X)))
@@ -603,6 +610,6 @@
   )
 
 
-;; Initializes main menu
+;; Inicializa main menu
 (send menu_frame show #t)
 
