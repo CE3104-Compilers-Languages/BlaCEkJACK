@@ -296,11 +296,10 @@
                              cond ((null? jugadores)
                                    '())
                                   (else
-                                   (let ([i (maximo-aux jugadores 0 0 0 0)])
                                      (cons
-                                      (get jugadores i)
-                                      (ordenar (delete jugadores i)))
-                                     )
+                                      (get jugadores (maximo-aux jugadores 0 0 0 0))
+                                      (ordenar (delete jugadores (maximo-aux jugadores 0 0 0 0))))
+                                     
                                     )
                                   ))
 
