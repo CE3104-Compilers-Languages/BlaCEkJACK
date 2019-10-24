@@ -107,14 +107,31 @@
 ; funcion que determina el estado final de juego de un jugador
 ; recibe un jugador y una puntuacion
 ; retorna el estado final del jugador en el juego segun una puntuacion de comparacion
-(define (estado_final jugador puntuacion)
+(define (estado_final jugador crupier)
   (cond
     [(> (sumar_jug jugador) 21) "PERDIO"]
+    [(equal? (get_nombre jugador) "Crupier") "---"]
     (else
      (cond
-       [(menor_igual_21 puntuacion)
+       [(menor_igual_21 (sumar_jug crupier))
         (cond
-          [(>= (sumar_jug jugador) puntuacion) "GANO"]
+          [(> (sumar_jug jugador) (sumar_jug crupier)) "GANO"]
+          [(= (sumar_jug jugador) (sumar_jug crupier))
+           (cond
+             [(not (or
+               (and (carta_miembro "As" (mano_jug jugador)) (carta_miembro "10" (mano_jug jugador)))
+               (and (carta_miembro "As" (mano_jug crupier)) (carta_miembro "10" (mano_jug crupier))))) "EMPATE"]
+             (else
+              (cond
+                [(and (carta_miembro "As" (mano_jug jugador)) (carta_miembro "10" (mano_jug jugador))) "GANO"]
+                [(and (carta_miembro "As" (mano_jug crupier)) (carta_miembro "10" (mano_jug crupier))) "PERDIO"]
+                [(and
+               (and (carta_miembro "As" (mano_jug jugador)) (carta_miembro "10" (mano_jug jugador)))
+               (and (carta_miembro "As" (mano_jug crupier)) (carta_miembro "10" (mano_jug crupier)))) "EMPATE"]
+                )
+              )
+             )
+           ]
           (else
            "PERDIO"
            )
@@ -133,7 +150,7 @@
 #| recibe una lista cuyos elementos son jugadores, la puntuacion del crupier
  y SIEMPRE una lista vacia como tercer parametro|#
 ; retorna una lista cuyos elementos son listas que contienen el nombre del jugador y los puntos actuales
-(define (conteo_final jugadores punt_crupier lista_final)
+(define (conteo_final jugadores crupier lista_final)
   (cond
     [(null? jugadores) '()]
     (else
@@ -142,10 +159,10 @@
     (list
      (get_nombre (car jugadores))
     (sumar_jug (car jugadores))
-    (estado_final (car jugadores) punt_crupier)
+    (estado_final (car jugadores) crupier)
     )
     )
-   (conteo_final (cdr jugadores) punt_crupier lista_final)
+   (conteo_final (cdr jugadores) crupier lista_final)
    )
    )
   )
@@ -272,28 +289,52 @@
                                ))
 
 
-;Método que añade el crupier a la lista de jugadores
-(provide AsignarNombres)
-(define (AsignarNombres nombres)
-  (cons (list "Crupier" (list))
-  (AsignarNombres-aux nombres (list)))
-  )
 
-;Método que toma una lista vacía y pone jugadores en la lista
-(define (AsignarNombres-aux nombres lista)
-  (cond
-    [(null? nombres) '()]
-    (else
-     (append
-    (list
-    (list
-     (car nombres)
-     '()
-    )
-    )
-   (AsignarNombres-aux (cdr nombres) lista)
-   )
-     )
-    )
-  )
+;Toma la lista de jugadores y la ordena según el criterio de "mejor?"
+(provide ordenar)
+(define (ordenar jugadores) (
+                             cond ((null? jugadores)
+                                   '())
+                                  (else
+                                   (let ([i (maximo-aux jugadores 0 0 0 0)])
+                                     (cons
+                                      (get jugadores i)
+                                      (ordenar (delete jugadores i)))
+                                     )
+                                    )
+                                  ))
 
+;Metodo para sacar el indice del jugador con el mayor puntaje
+(define (maximo-aux jugadores i i-aux val cartas) (
+                            cond((null? jugadores)
+                                 i)
+                                (else
+                                 (cond
+                                   ((mejor? (sumar_jugador_aux 0 jugadores 0) val (len (cdar jugadores)) cartas)
+                                    (maximo-aux (cdr jugadores) i-aux (+ 1 i-aux) (sumar_jugador_aux 0 jugadores 0) (len (cdar jugadores))))
+                                   (else
+                                    (maximo-aux (cdr jugadores) i (+ 1 i-aux) val cartas))
+                                   )
+                                 )
+                             ))
+
+;Determina si una mano es superior basado en la suma de sus cartas y la cantidad de cartas en la mano
+(define (mejor? sumaJugador sumaCrupier cartasJugador cartasCrupier) (
+                      cond
+                       ((> sumaJugador 21)
+                        #f)
+                       ((> sumaCrupier 21)
+                        #t)
+                       ((> sumaJugador sumaCrupier)
+                        #t)
+                       ((> sumaCrupier sumaJugador)
+                        #f)
+                       ((< sumaJugador 21) ;Empate formal
+                        #f)
+                       ((equal? cartasCrupier 2)
+                        #f)
+                       ((equal? cartasJugador 2)
+                        #t)
+                       (else ;Empate formal
+                        #f)
+                       ))

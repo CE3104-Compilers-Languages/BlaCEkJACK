@@ -26,7 +26,6 @@
 (define jugadores '())
 (define conteo 52)
 (define current_turn 0)
-(define turno 1)
 (define CantidadJugadores 4)
 (define game_spacing 10)
 
@@ -35,15 +34,7 @@
 (define medium_font (make-object font% 16 'modern))
 (define small_font (make-object font% 12 'modern))
 
-(define (GenerarJugadores nombres)
-  (set! jugadores (AsignarNombres nombres))
-  (set! CantidadJugadores (+ 1 (len nombres)))
-  )
 
-(define (IniciarJuego nombres)
-  (GenerarJugadores nombres)
-  (IniciarCartas (* 2 CantidadJugadores))
-  )
 
 ;Método que actualiza los mazos de la partida al pedir una nueva carta
 (define (pedir Njugador)
@@ -65,11 +56,6 @@
                                  (IniciarCartas (- Ncartas 1)))
                                 ))
 
-; Método que finaliza el turno de un jugador y pasa al siguiente al siguiente
-(define (plantar)
-  (set! turno (remainder (+ turno 1) CantidadJugadores))
-  turno
-  )
 
 
 ; Devuelve el puntaje total de un dado jugador según las cartas que posean
@@ -440,7 +426,7 @@
 ; Inicializa el juego configurando los elementos necesarios de logica e interfaz.
 (define (bCEj X)
   (cond
-    ((equal? (list_length jugadores 0) 0) (begin (set! jugadores (append jugadores (list (list "crupier" '())))) (bCEj X)))
+    ((equal? (list_length jugadores 0) 0) (begin (set! jugadores (append jugadores (list (list "Crupier" '())))) (bCEj X)))
     ((and (>= (list_length X 0) 1) (<= (list_length X 0) 3)) (begin
                                                                (set! jugadores (append jugadores (list (list (car X) '()))))
                                                                (set_player_name (car X) (- (list_length jugadores 0) 1))
@@ -468,7 +454,8 @@
 (define column0 (new horizontal-panel% [parent frame]))
 (define column1 (new horizontal-panel% [parent frame]))
 (define column2 (new horizontal-panel% [parent frame]))
-(define column3 (new vertical-panel% [parent frame]))
+(define column3 (new horizontal-panel% [parent frame]))
+(define column4 (new vertical-panel% [parent frame]))
 
 (define celda00 (new text-field%
                       (label "")
@@ -544,25 +531,44 @@
                       [min-height cell_height]
                       [enabled #f]
                       ))
+(define celda30 (new text-field%
+                      (label "")
+                      (parent column3)
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      [enabled #f]
+                      ))
+(define celda31 (new text-field%
+                      (label "")
+                      (parent column3)
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      [enabled #f]
+                      ))
+(define celda32 (new text-field%
+                      (label "")
+                      (parent column3)
+                      (init-value "")
+                      [min-width cell_width]	 
+                      [min-height cell_height]
+                      [enabled #f]
+                      ))
 
-
-(define boton_repetir (new button% [parent column3]
-     [label "Repetir"]
-     [min-width 50]
-     [min-height 50]
-     ))
-
-(define boton_salir (new button% [parent column3]
+(define boton_salir (new button% [parent column4]
      [label "Salir"]
      [min-width 50]
      [min-height 50]
+     [callback (lambda (button event)
+                         (exit))]
      ))
 
 ; ACTUALIZADA
 ; funcion que despliega la tabla de resultados
 
 (define (ventana_resultados jugadores)
-  (mostrar_resultado_final (conteo_final (cdr jugadores) (sumar_jug (car jugadores)) '()) 0)
+  (mostrar_resultado_final (conteo_final (ordenar jugadores) (car jugadores) '()) 0)
   )
 
 ; ACTUALIZADA
@@ -571,7 +577,7 @@
 (define (mostrar_resultado_final conteo_final cont)
 
    (cond
-     [(or (null? conteo_final) (= cont 3)) (send frame show #t)]
+     [(or (null? conteo_final) (= cont 4)) (send frame show #t)]
      (else
       (cond
         [(= cont 0) (send celda00 set-value (caar conteo_final))     ; Nombre
@@ -587,6 +593,10 @@
         [(= cont 2)(send celda20 set-value (caar conteo_final))
                      (send celda21 set-value (~v (cadar conteo_final)))
                      (send celda22 set-value (caddar conteo_final))
+                     (mostrar_resultado_final (cdr conteo_final) 3)]
+         [(= cont 3)(send celda30 set-value (caar conteo_final))
+                     (send celda31 set-value (~v (cadar conteo_final)))
+                     (send celda32 set-value (caddar conteo_final))
                      (mostrar_resultado_final (cdr conteo_final) 3)]
         (else "Ya no puedo ingresar mas jugadores")
         )
